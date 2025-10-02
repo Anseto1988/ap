@@ -1,11 +1,16 @@
 {
-  "name": "admin-list-users",
+  "name": "starter-template",
   "version": "1.0.0",
-  "description": "Appwrite function to list users for admin dashboard",
+  "description": "",
   "main": "src/main.js",
-  "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
+  "scripts": {
+    "format": "prettier --write ."
+  },
   "dependencies": {
-    "node-appwrite": "^13.0.0"
+    "node-appwrite": "^14.1.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5"
   }
 }

@@ -1,44 +1,35 @@
-'use strict';
+import { Client, Users } from 'node-appwrite';
 
-const { Client, Users, Query } = require('node-appwrite');
-
-/**
- * Appwrite Function: Admin List Users
- * Runtime: Node 16
- * Expects JSON payload: { "offset": number, "limit": number }
- * Returns: { users: [], total: number }
- */
-module.exports = async function (req, res) {
-  const logger = req.log || console;
+// This Appwrite function will be executed every time your function is triggered
+export default async ({ req, res, log, error }) => {
+  // You can use the Appwrite SDK to interact with other services
+  // For this example, we're using the Users service
+  const client = new Client()
+    .setEndpoint(process.env.APPWRITE_FUNCTION_API_ENDPOINT)
+    .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
+    .setKey(req.headers['x-appwrite-key'] ?? '');
+  const users = new Users(client);
 
   try {
-    const payload = (req.payload && req.payload.trim()) ? JSON.parse(req.payload) : {};
-    const offset = Number.isFinite(payload.offset) ? payload.offset : 0;
-    const limit = Number.isFinite(payload.limit) ? payload.limit : 25;
-
-    const apiKey = process.env.APPWRITE_FUNCTION_API_KEY || process.env.APPWRITE_API_KEY;
-    if (!apiKey) {
-      throw new Error('APPWRITE_FUNCTION_API_KEY is not verfügbar. Setze das Secret in den Function-Umgebungsvariablen.');
-    }
-
-    const client = new Client()
-      .setEndpoint(process.env.APPWRITE_FUNCTION_ENDPOINT || process.env.APPWRITE_ENDPOINT)
-      .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID || process.env.APPWRITE_PROJECT_ID)
-      .setKey(apiKey);
-
-    const users = new Users(client);
-    const queries = [Query.offset(offset), Query.limit(limit)];
-    const result = await users.list(queries);
-
-    res.json({
-      users: result.users ?? [],
-      total: result.total ?? result.users?.length ?? 0
-    });
-  } catch (err) {
-    logger.error('Failed to list users', err);
-    const message = err?.message || 'Unbekannter Fehler beim Laden der Benutzer';
-    res.status(500).json({
-      error: message
-    });
+    const response = await users.list();
+    // Log messages and errors to the Appwrite Console
+    // These logs won't be seen by your end users
+    log(`Total users: ${response.total}`);
+  } catch(err) {
+    error("Could not list users: " + err.message);
   }
+
+  // The req object contains the request data
+  if (req.path === "/ping") {
+    // Use res object to respond with text(), json(), or binary()
+    // Don't forget to return a response!
+    return res.text("Pong");
+  }
+
+  return res.json({
+    motto: "Build like a team of hundreds_",
+    learn: "https://appwrite.io/docs",
+    connect: "https://appwrite.io/discord",
+    getInspired: "https://builtwith.appwrite.io",
+  });
 };
