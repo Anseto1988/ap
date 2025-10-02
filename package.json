@@ -1,0 +1,11 @@
+{
+  "name": "admin-list-users",
+  "version": "1.0.0",
+  "description": "Appwrite function to list users for admin dashboard",
+  "main": "src/main.js",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "node-appwrite": "^13.0.0"
+  }
+}
